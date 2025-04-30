@@ -1,6 +1,6 @@
 [package]
 name = "sologger_log_context"
-version = "0.2.2"
+version = "0.2.3"
 edition = "2021"
 authors = ["Will Kennedy"]
 description = "Provides functionality to turn raw logs output by Solana RPCs into structured logs for specified program IDs"
@@ -16,11 +16,11 @@ crate-type = ["cdylib", "rlib"]
 doctest = false
 
 [dependencies]
-log = "0.4.25"
+log = "0.4.27"
 regex = { version = "1.11.1" }
-serde = { version = "1.0.218", features = ["serde_derive", "derive"]}
-serde_json = {version = "1.0.138"}
-serde_derive = "1.0.218"
+serde = { version = "1.0.219", features = ["serde_derive", "derive"]}
+serde_json = {version = "1.0.140"}
+serde_derive = "1.0.219"
 bs58 = "0.5.1"
 lazy_static = "1.5.0"
 wasm-bindgen = "0.2"
