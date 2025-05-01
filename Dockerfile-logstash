@@ -7,11 +7,18 @@
 ################################################################################
 # Create a stage for building the application.
 
-ARG RUST_VERSION=1.81.0
+ARG RUST_VERSION=1.85.1
 ARG APP_NAME=sologger
-FROM rust:${RUST_VERSION}-slim-bookworm AS build
+FROM rust:${RUST_VERSION}-slim AS build
 ARG APP_NAME
 WORKDIR /app
+
+RUN #apt-get update && apt-get install -y pkg-config && apt-get install -y libssl-dev && apt-get install -y openssl && apt-get install -y ca-certificates && apt-get install -y protobuf-compiler
+
+RUN apt-get update && apt-get install -y \
+    curl \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
 
 # Build the application.
 # Leverage a cache mount to /usr/local/cargo/registry/
@@ -23,6 +30,7 @@ WORKDIR /app
 RUN --mount=type=bind,source=sologger-log-context,target=sologger-log-context \
     --mount=type=bind,source=sologger-log-transport,target=sologger-log-transport \
     --mount=type=bind,source=sologger-log-transformer,target=sologger-log-transformer \
+    --mount=type=bind,source=sologger-log-transformer-wasm,target=sologger-log-transformer-wasm \
     --mount=type=bind,source=sologger,target=sologger \
     --mount=type=bind,source=Cargo.toml,target=Cargo.toml \
     --mount=type=bind,source=Cargo.lock,target=Cargo.lock \
@@ -50,6 +58,11 @@ EOF
 # (e.g., debian@sha256:ac707220fbd7b67fc19b112cee8170b41a9e97f703f588b2cdbbcdcecdd8af57).
 FROM debian:stable-slim AS final
 
+RUN #apt-get update && apt-get install -y pkg-config && apt-get install -y libssl-dev && apt-get install -y openssl && apt-get install -y ca-certificates && apt-get install -y protobuf-compiler
+
+RUN apt-get update && apt-get install -y \
+    curl \
+    build-essential
 # Create a non-privileged user that the app will run under.
 # See https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#user
 ARG UID=10001

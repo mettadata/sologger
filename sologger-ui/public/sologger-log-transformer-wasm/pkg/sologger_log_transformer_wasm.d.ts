@@ -1,43 +1,16 @@
 /* tslint:disable */
 /* eslint-disable */
-/**
- * @param {(string)[]} logs
- * @param {(string)[]} program_ids
- * @returns {any}
- */
-export function parse_logs_basic(logs: (string)[], program_ids: (string)[]): any;
+export function parse_logs_basic(logs: string[], program_ids: string[]): any;
 export class WasmLogContextTransformer {
   free(): void;
-  /**
-   * @param {(string)[]} program_ids
-   */
-  constructor(program_ids: (string)[]);
-  /**
-   * @param {any} response
-   * @returns {any}
-   */
+  constructor(program_ids: string[]);
   from_rpc_response(response: any): any;
-  /**
-   * @param {any} rpc_logs_response
-   * @param {bigint} slot
-   * @returns {any}
-   */
   from_rpc_logs_response(rpc_logs_response: any, slot: bigint): any;
 }
 export class WasmLogParser {
   free(): void;
-  /**
-   * @param {(string)[]} program_ids
-   */
-  constructor(program_ids: (string)[]);
-  /**
-   * @param {(string)[]} logs
-   * @param {string} transaction_error
-   * @param {bigint} slot
-   * @param {string} signature
-   * @returns {any}
-   */
-  parse_logs(logs: (string)[], transaction_error: string, slot: bigint, signature: string): any;
+  constructor(program_ids: string[]);
+  parse_logs(logs: string[], transaction_error: string, slot: bigint, signature: string): any;
 }
 
 export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembly.Module;
@@ -46,17 +19,20 @@ export interface InitOutput {
   readonly memory: WebAssembly.Memory;
   readonly __wbg_wasmlogcontexttransformer_free: (a: number, b: number) => void;
   readonly wasmlogcontexttransformer_new: (a: number, b: number) => number;
-  readonly wasmlogcontexttransformer_from_rpc_response: (a: number, b: number, c: number) => void;
-  readonly wasmlogcontexttransformer_from_rpc_logs_response: (a: number, b: number, c: number, d: number) => void;
+  readonly wasmlogcontexttransformer_from_rpc_response: (a: number, b: any) => [number, number, number];
+  readonly wasmlogcontexttransformer_from_rpc_logs_response: (a: number, b: any, c: bigint) => [number, number, number];
   readonly __wbg_wasmlogparser_free: (a: number, b: number) => void;
   readonly wasmlogparser_new: (a: number, b: number) => number;
-  readonly wasmlogparser_parse_logs: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number) => number;
-  readonly parse_logs_basic: (a: number, b: number, c: number, d: number) => number;
+  readonly wasmlogparser_parse_logs: (a: number, b: number, c: number, d: number, e: number, f: bigint, g: number, h: number) => any;
+  readonly parse_logs_basic: (a: number, b: number, c: number, d: number) => any;
+  readonly __wbindgen_exn_store: (a: number) => void;
+  readonly __externref_table_alloc: () => number;
+  readonly __wbindgen_export_2: WebAssembly.Table;
+  readonly __wbindgen_free: (a: number, b: number, c: number) => void;
   readonly __wbindgen_malloc: (a: number, b: number) => number;
   readonly __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;
-  readonly __wbindgen_add_to_stack_pointer: (a: number) => number;
-  readonly __wbindgen_exn_store: (a: number) => void;
-  readonly __wbindgen_free: (a: number, b: number, c: number) => void;
+  readonly __externref_table_dealloc: (a: number) => void;
+  readonly __wbindgen_start: () => void;
 }
 
 export type SyncInitInput = BufferSource | WebAssembly.Module;

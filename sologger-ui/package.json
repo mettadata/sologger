@@ -9,24 +9,24 @@
     "preview": "vite build & vite preview"
   },
   "dependencies": {
-    "@handsontable/vue3": "^14.6.2",
-    "chart.js": "^4.4.8",
-    "handsontable": "^14.6.2",
-    "primevue": "^4.2.5",
-    "tailwindcss-primeui": "^0.3.4",
+    "@handsontable/vue3": "^15.3.0",
+    "chart.js": "^4.4.9",
+    "handsontable": "^15.3.0",
+    "primevue": "^4.3.3",
+    "tailwindcss-primeui": "^0.6.1",
     "vue": "^3.5.13",
     "vue-chartjs": "^5.3.2",
-    "vue-router": "^4.4.5"
+    "vue-router": "^4.5.1"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^5.1.5",
-    "autoprefixer": "^10.4.20",
-    "postcss": "^8.4.49",
+    "@vitejs/plugin-vue": "^5.2.3",
+    "autoprefixer": "^10.4.21",
+    "postcss": "^8.5.3",
     "postcss-custom-media": "^11.0.5",
     "postcss-import": "^16.1.0",
-    "postcss-preset-env": "^10.1.4",
+    "postcss-preset-env": "^10.1.6",
     "tailwindcss": "^3.4.17",
-    "vite": "^5.4.14",
+    "vite": "^6.3.4",
     "vite-plugin-wasm-pack": "^0.1.12"
   }
 }
