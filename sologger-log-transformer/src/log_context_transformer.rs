@@ -316,6 +316,7 @@ mod tests {
             loaded_addresses: OptionSerializer::None,
             return_data: OptionSerializer::None,
             compute_units_consumed: OptionSerializer::None,
+            cost_units: OptionSerializer::None,
         };
         let transaction = EncodedTransactionWithStatusMeta {
             transaction: EncodedTransaction::Json(ui_transaction),
@@ -454,6 +455,7 @@ mod tests {
             loaded_addresses: Default::default(),
             return_data: None,
             compute_units_consumed: None,
+            cost_units: None,
         };
         let transaction_with_status_meta = VersionedTransactionWithStatusMeta {
             transaction: versioned_transaction,
@@ -511,6 +513,7 @@ mod tests {
             loaded_addresses: OptionSerializer::None,
             return_data: OptionSerializer::None,
             compute_units_consumed: OptionSerializer::None,
+            cost_units: OptionSerializer::None,
         };
         let transaction = EncodedTransactionWithStatusMeta {
             transaction: EncodedTransaction::Json(ui_transaction),
@@ -567,6 +570,7 @@ mod tests {
             loaded_addresses: OptionSerializer::None,
             return_data: OptionSerializer::None,
             compute_units_consumed: OptionSerializer::None,
+            cost_units: OptionSerializer::None,
         };
         let transaction = EncodedTransactionWithStatusMeta {
             transaction: EncodedTransaction::Json(ui_transaction),

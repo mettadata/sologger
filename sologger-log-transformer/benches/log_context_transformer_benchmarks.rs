@@ -41,6 +41,7 @@ fn create_mock_ui_confirmed_block() -> UiConfirmedBlock {
         loaded_addresses: OptionSerializer::None,
         return_data: OptionSerializer::None,
         compute_units_consumed: OptionSerializer::None,
+        cost_units: OptionSerializer::None,
     };
     let transaction = EncodedTransactionWithStatusMeta {
         transaction: EncodedTransaction::Json(ui_transaction),
@@ -92,6 +93,7 @@ fn create_mock_encoded_confirmed_block() -> EncodedConfirmedBlock {
         loaded_addresses: OptionSerializer::None,
         return_data: OptionSerializer::None,
         compute_units_consumed: OptionSerializer::None,
+        cost_units: OptionSerializer::None,
     };
     let transaction = EncodedTransactionWithStatusMeta {
         transaction: EncodedTransaction::Json(ui_transaction),
