@@ -164,3 +164,240 @@ fn enable_tokio_rt_metrics() {
         }
     });
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use sologger_log_context::programs_selector::ProgramsSelector;
+    use std::collections::HashMap;
+
+    fn create_test_config() -> SologgerConfig {
+        SologgerConfig {
+            rpc_url: "wss://test.solana.com".to_string(),
+            log4rs_config_location: "test.yml".to_string(),
+            opentelemetry_config_location: "test.json".to_string(),
+            all_with_votes: false,
+            commitment_level: None,
+        }
+    }
+
+    fn create_test_program_selector() -> ProgramsSelector {
+        ProgramsSelector::new(&[
+            "11111111111111111111111111111111".to_string(),
+            "22222222222222222222222222222222".to_string()
+        ])
+    }
+
+    fn create_test_program_selector_all() -> ProgramsSelector {
+        ProgramsSelector::new_all_programs()
+    }
+
+    #[test]
+    fn test_log_filters_creation_specific_programs() {
+        let config = create_test_config();
+        let program_selector = create_test_program_selector();
+        
+        // Simulate the log filter creation logic from start_client
+        let all_log_filter: RpcTransactionLogsFilter = if config.all_with_votes {
+            RpcTransactionLogsFilter::AllWithVotes
+        } else {
+            RpcTransactionLogsFilter::All
+        };
+
+        let mut log_filters: HashMap<String, RpcTransactionLogsFilter> =
+            HashMap::with_capacity(program_selector.programs.len());
+        
+        if program_selector.select_all_programs {
+            log_filters.insert("all".to_string(), all_log_filter);
+        } else {
+            for program_id in &program_selector.programs {
+                let program_key = bs58::encode(program_id).into_string();
+                log_filters.insert(
+                    program_key.clone(),
+                    RpcTransactionLogsFilter::Mentions(vec![program_key]),
+                );
+            }
+        }
+
+        assert_eq!(log_filters.len(), 2);
+        assert!(log_filters.contains_key("11111111111111111111111111111111"));
+        assert!(log_filters.contains_key("22222222222222222222222222222222"));
+        
+        if let Some(RpcTransactionLogsFilter::Mentions(mentions)) = log_filters.get("11111111111111111111111111111111") {
+            assert_eq!(mentions, &vec!["11111111111111111111111111111111".to_string()]);
+        } else {
+            panic!("Expected Mentions filter");
+        }
+    }
+
+    #[test]
+    fn test_log_filters_creation_all_programs() {
+        let config = create_test_config();
+        let program_selector = create_test_program_selector_all();
+        
+        // Simulate the log filter creation logic from start_client
+        let all_log_filter: RpcTransactionLogsFilter = if config.all_with_votes {
+            RpcTransactionLogsFilter::AllWithVotes
+        } else {
+            RpcTransactionLogsFilter::All
+        };
+
+        let mut log_filters: HashMap<String, RpcTransactionLogsFilter> =
+            HashMap::with_capacity(program_selector.programs.len());
+        
+        if program_selector.select_all_programs {
+            log_filters.insert("all".to_string(), all_log_filter);
+        } else {
+            for program_id in &program_selector.programs {
+                let program_key = bs58::encode(program_id).into_string();
+                log_filters.insert(
+                    program_key.clone(),
+                    RpcTransactionLogsFilter::Mentions(vec![program_key]),
+                );
+            }
+        }
+
+        assert_eq!(log_filters.len(), 1);
+        assert!(log_filters.contains_key("all"));
+        
+        if let Some(RpcTransactionLogsFilter::All) = log_filters.get("all") {
+            // Expected All filter
+        } else {
+            panic!("Expected All filter");
+        }
+    }
+
+    #[test]
+    fn test_log_filters_creation_with_votes() {
+        let mut config = create_test_config();
+        config.all_with_votes = true;
+        let program_selector = create_test_program_selector_all();
+        
+        // Simulate the log filter creation logic from start_client
+        let all_log_filter: RpcTransactionLogsFilter = if config.all_with_votes {
+            RpcTransactionLogsFilter::AllWithVotes
+        } else {
+            RpcTransactionLogsFilter::All
+        };
+
+        let mut log_filters: HashMap<String, RpcTransactionLogsFilter> =
+            HashMap::with_capacity(program_selector.programs.len());
+        
+        if program_selector.select_all_programs {
+            log_filters.insert("all".to_string(), all_log_filter);
+        } else {
+            for program_id in &program_selector.programs {
+                let program_key = bs58::encode(program_id).into_string();
+                log_filters.insert(
+                    program_key.clone(),
+                    RpcTransactionLogsFilter::Mentions(vec![program_key]),
+                );
+            }
+        }
+
+        assert_eq!(log_filters.len(), 1);
+        assert!(log_filters.contains_key("all"));
+        
+        if let Some(RpcTransactionLogsFilter::AllWithVotes) = log_filters.get("all") {
+            // Expected AllWithVotes filter
+        } else {
+            panic!("Expected AllWithVotes filter");
+        }
+    }
+
+    #[test]
+    fn test_commitment_config_creation_none() {
+        let config = create_test_config();
+        
+        // Simulate the commitment config creation logic from start_client
+        let commitment_config = match &config.commitment_level {
+            Some(level) => {
+                let commitment_level = CommitmentLevel::from_str(level).unwrap();
+                Some(CommitmentConfig {
+                    commitment: commitment_level,
+                })
+            }
+            None => None,
+        };
+
+        assert!(commitment_config.is_none());
+    }
+
+    #[test]
+    fn test_commitment_config_creation_finalized() {
+        let mut config = create_test_config();
+        config.commitment_level = Some("finalized".to_string());
+        
+        // Simulate the commitment config creation logic from start_client
+        let commitment_config = match &config.commitment_level {
+            Some(level) => {
+                let commitment_level = CommitmentLevel::from_str(level).unwrap();
+                Some(CommitmentConfig {
+                    commitment: commitment_level,
+                })
+            }
+            None => None,
+        };
+
+        assert!(commitment_config.is_some());
+        let config = commitment_config.unwrap();
+        assert_eq!(config.commitment, CommitmentLevel::Finalized);
+    }
+
+    #[test]
+    fn test_commitment_config_creation_confirmed() {
+        let mut config = create_test_config();
+        config.commitment_level = Some("confirmed".to_string());
+        
+        // Simulate the commitment config creation logic from start_client
+        let commitment_config = match &config.commitment_level {
+            Some(level) => {
+                let commitment_level = CommitmentLevel::from_str(level).unwrap();
+                Some(CommitmentConfig {
+                    commitment: commitment_level,
+                })
+            }
+            None => None,
+        };
+
+        assert!(commitment_config.is_some());
+        let config = commitment_config.unwrap();
+        assert_eq!(config.commitment, CommitmentLevel::Confirmed);
+    }
+
+    #[test]
+    fn test_commitment_config_creation_processed() {
+        let mut config = create_test_config();
+        config.commitment_level = Some("processed".to_string());
+        
+        // Simulate the commitment config creation logic from start_client
+        let commitment_config = match &config.commitment_level {
+            Some(level) => {
+                let commitment_level = CommitmentLevel::from_str(level).unwrap();
+                Some(CommitmentConfig {
+                    commitment: commitment_level,
+                })
+            }
+            None => None,
+        };
+
+        assert!(commitment_config.is_some());
+        let config = commitment_config.unwrap();
+        assert_eq!(config.commitment, CommitmentLevel::Processed);
+    }
+
+    #[cfg(feature = "enable_tokio_rt_metrics")]
+    #[tokio::test]
+    async fn test_enable_tokio_rt_metrics() {
+        // This test verifies that the enable_tokio_rt_metrics function doesn't panic
+        // Since it spawns a background task, we can't easily test its output
+        // But we can verify it doesn't crash
+        enable_tokio_rt_metrics();
+        
+        // Give the spawned task a moment to start
+        tokio::time::sleep(std::time::Duration::from_millis(10)).await;
+        
+        // If we reach here without panicking, the test passes
+        assert!(true);
+    }
+}

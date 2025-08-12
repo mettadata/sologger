@@ -111,3 +111,93 @@ impl std::fmt::Display for ConfigError {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use serde_json::json;
+
+    #[test]
+    fn test_create_programs_selector_from_config_null() {
+        let config = json!({
+            "rpcUrl": "wss://api.mainnet-beta.solana.com"
+        });
+        
+        let programs_selector = create_programs_selector_from_config(&config);
+        assert!(!programs_selector.select_all_programs);
+        assert!(programs_selector.programs.is_empty());
+    }
+
+    #[test]
+    fn test_create_programs_selector_from_config_with_programs() {
+        let config = json!({
+            "rpcUrl": "wss://api.mainnet-beta.solana.com",
+            "programsSelector": {
+                "programs": [
+                    "11111111111111111111111111111112",
+                    "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+                ]
+            }
+        });
+        
+        let programs_selector = create_programs_selector_from_config(&config);
+        assert!(!programs_selector.select_all_programs);
+        assert_eq!(programs_selector.programs.len(), 2);
+        assert!(programs_selector.is_program_selected_string("11111111111111111111111111111112"));
+        assert!(programs_selector.is_program_selected_string("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"));
+    }
+
+    #[test]
+    fn test_create_programs_selector_from_config_all_programs() {
+        let config = json!({
+            "rpcUrl": "wss://api.mainnet-beta.solana.com",
+            "programsSelector": {
+                "programs": ["*"]
+            }
+        });
+        
+        let programs_selector = create_programs_selector_from_config(&config);
+        assert!(programs_selector.select_all_programs);
+        assert_eq!(programs_selector.programs.len(), 0);
+    }
+
+    #[test]
+    fn test_create_programs_selector_from_config_empty_programs() {
+        let config = json!({
+            "rpcUrl": "wss://api.mainnet-beta.solana.com",
+            "programsSelector": {
+                "programs": []
+            }
+        });
+        
+        let programs_selector = create_programs_selector_from_config(&config);
+        assert!(!programs_selector.select_all_programs);
+        assert!(programs_selector.programs.is_empty());
+    }
+
+    #[test]
+    fn test_create_programs_selector_from_config_non_array_programs() {
+        let config = json!({
+            "rpcUrl": "wss://api.mainnet-beta.solana.com",
+            "programsSelector": {
+                "programs": "not_an_array"
+            }
+        });
+        
+        let programs_selector = create_programs_selector_from_config(&config);
+        assert!(!programs_selector.select_all_programs);
+        assert!(programs_selector.programs.is_empty());
+    }
+
+    #[test]
+    fn test_config_error_display() {
+        let error = ConfigError::Loading;
+        assert_eq!(format!("{}", error), "Loading");
+    }
+
+    #[test]
+    fn test_config_error_debug() {
+        let error = ConfigError::Loading;
+        assert_eq!(format!("{:?}", error), "Loading");
+    }
+}
