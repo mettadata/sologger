@@ -1,6 +1,6 @@
 [package]
 name = "sologger"
-version = "0.2.3"
+version = "0.2.4"
 edition = "2021"
 authors = ["Will Kennedy"]
 description = "Configurable standalone service to parse raw logs emitted from a Solana RPC into structured logs and transport Solana logs to either a LogStash or OpenTelemetry endpoint via TCP"
@@ -16,23 +16,23 @@ doctest = false
 
 [dependencies]
 serde_derive = "1.0"
-log = "0.4.27"
+log = "0.4"
 bs58 = "0.5.1"
 futures-util = "0.3.31"
 anyhow = "1.0"
 serde = { version = "1.0" }
 serde_json = {version = "1.0"}
-solana-pubsub-client = { version = "2.3", optional = true }
-solana-rpc-client-api = { version = "2.3", optional = true }
-solana-sdk = { version = "2.3", optional = true }
-sologger_log_context = "0.2.3"
-sologger_log_transformer = "0.2.4"
-sologger_log_transport = "0.2.2"
-tokio = { version = "1.47", features = ["full"] }
+solana-pubsub-client = { version = "3.1", optional = true }
+solana-rpc-client-api = { version = "3.1", optional = true }
+solana-sdk = { version = "3.0", optional = true }
+sologger_log_context = "0.2.4"
+sologger_log_transformer = "0.2.5"
+sologger_log_transport = "0.2.3"
+tokio = { version = "1.49", features = ["full"] }
 tokio-metrics = { version = "0.4", optional = true}
 
 [target.'cfg(not(target_os = "windows"))'.dependencies]
-signal-hook = { version = "0.3"}
+signal-hook = { version = "0.4.1"}
 
 [features]
 default = ["solana_client_subscriber"]
