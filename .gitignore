@@ -1,7 +1,4 @@
 /target
 /Cargo.lock
 test-ledger
-/.idea/.gitignore
-/.idea/modules.xml
-/.idea/sologger.iml
-/.idea/vcs.xml
+/.idea

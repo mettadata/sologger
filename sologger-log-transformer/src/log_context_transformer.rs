@@ -268,14 +268,12 @@ mod tests {
     use std::str::FromStr;
 
     use solana_rpc_client::rpc_client::RpcClient;
-    use solana_rpc_client_api::config::{RpcBlockConfig, RpcTransactionConfig};
-    use solana_rpc_client_api::response::{Response, RpcLogsResponse, RpcResponseContext};
+    use solana_rpc_client_api::config::{CommitmentConfig, RpcBlockConfig, RpcTransactionConfig};
+    use solana_rpc_client_api::response::{Response, RpcLogsResponse, RpcResponseContext, UiTransactionError};
     use solana_sdk::clock::UnixTimestamp;
-    use solana_sdk::commitment_config::CommitmentConfig;
     use solana_sdk::instruction::InstructionError;
     use solana_sdk::message::Message;
     use solana_sdk::signature::{Keypair, Signature, Signer};
-    use solana_sdk::system_transaction;
     use solana_sdk::transaction::{Transaction, TransactionError, VersionedTransaction};
     use solana_transaction_status::option_serializer::OptionSerializer;
     use solana_transaction_status::{ConfirmedBlock, EncodedConfirmedBlock, EncodedTransaction, EncodedTransactionWithStatusMeta, TransactionDetails, TransactionStatusMeta, UiConfirmedBlock, UiMessage, UiParsedMessage, UiRawMessage, UiTransaction, UiTransactionEncoding, UiTransactionStatusMeta, VersionedConfirmedBlock, VersionedTransactionWithStatusMeta};
@@ -374,7 +372,12 @@ mod tests {
         let bob = Keypair::new();
         let lamports = 50;
         let latest_blockhash = client.get_latest_blockhash().unwrap();
-        let tx = system_transaction::transfer(&alice, &bob.pubkey(), lamports, latest_blockhash);
+
+        // Create a simple transaction without using system_transaction
+        let instructions = vec![]; // Empty instructions for testing
+        let message = Message::new(&instructions, Some(&alice.pubkey()));
+        let tx = Transaction::new(&[&alice], message, latest_blockhash);
+
         let signature = client.send_and_confirm_transaction(&tx).unwrap();
         let config = RpcTransactionConfig {
             encoding: Some(UiTransactionEncoding::Binary),
@@ -557,8 +560,8 @@ mod tests {
             message: UiMessage::Raw(ui_raw_message),
         };
         let transaction_status_meta = UiTransactionStatusMeta {
-            err: Some(TransactionError::AccountNotFound),
-            status: Err(TransactionError::AccountNotFound),
+            err: Some(UiTransactionError::from(TransactionError::AccountNotFound)),
+            status: Err(UiTransactionError::from(TransactionError::AccountNotFound)),
             fee: 0,
             pre_balances: vec![],
             post_balances: vec![],

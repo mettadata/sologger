@@ -481,7 +481,7 @@ impl LogContext {
             }
             if end_parsing {
                 trace!("parse_logs for slot: {}", slot);
-                if(current_depth > 0) {
+                if current_depth > 0 {
                     current_program_id = parent_program_id.clone();
                 } else {
                     current_program_id = String::new();

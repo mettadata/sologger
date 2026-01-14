@@ -4,16 +4,15 @@ use std::str::FromStr;
 use anyhow::Result as AnyResult;
 use log::{Level, trace};
 use opentelemetry::{Key, KeyValue, metrics, trace::Tracer, global};
-use opentelemetry::logs::LogError;
-use opentelemetry::metrics::{MeterProvider, MetricsError};
-use opentelemetry::metrics::noop::NoopMeterProvider;
+use opentelemetry::metrics::{MeterProvider};
 use opentelemetry::trace::TraceError;
 use opentelemetry_api::global::logger_provider;
+use opentelemetry_api::metrics::MetricsError;
 use opentelemetry_api::trace::FutureExt;
+use opentelemetry_otlp::{LogExporter, WithExportConfig};
 use opentelemetry_appender_log::OpenTelemetryLogBridge;
-use opentelemetry_otlp::{Protocol, WithExportConfig};
 use opentelemetry_sdk::{Resource, runtime, trace as sdktrace};
-use opentelemetry_sdk::logs::{BatchConfig, LoggerProvider};
+use opentelemetry_sdk::logs::{BatchConfig, LogError, LoggerProvider};
 use opentelemetry_sdk::metrics::{PeriodicReader, SdkMeterProvider};
 use opentelemetry_sdk::trace::{Config, TracerProvider};
 use opentelemetry_stdout::SpanExporter;
@@ -42,15 +41,25 @@ pub fn init_logs_opentelemetry(
         .collect();
     trace!("OLTP log_config: {:?}", log_config);
 
-    let logger = opentelemetry_otlp::new_pipeline()
-        .logging().with_resource(Resource::new(log_config))
-        .with_exporter(
-            opentelemetry_otlp::new_exporter()
-                .tonic()
-                .with_endpoint(&config.endpoint),
-        )
-        .install_batch(runtime::Tokio)
-        .expect("Failed to initialize opentelemetry logging");
+    let exporter = LogExporter::builder()
+        .with_tonic()
+        .with_endpoint(&config.endpoint)
+        .build()?;
+
+    let logger = LoggerProvider::builder()
+        .with_resource(Resource::new(log_config))
+        .with_batch_exporter(exporter, runtime::Tokio)
+        .build();//.expect("Failed to initialize opentelemetry logging");
+
+    // let logger = opentelemetry_otlp::new_pipeline()
+    //     .logging().with_resource(Resource::new(log_config))
+    //     .with_exporter(
+    //         opentelemetry_otlp::new_exporter()
+    //             .tonic()
+    //             .with_endpoint(&config.endpoint),
+    //     )
+    //     .install_batch(runtime::Tokio)
+    //     .expect("Failed to initialize opentelemetry logging");
 
     // Create a new OpenTelemetryLogBridge using the above LoggerProvider.
     let otel_log_appender = OpenTelemetryLogBridge::new(&logger);
@@ -76,7 +85,7 @@ pub fn init_tracer(config: &OpentelemetryConfig) -> Result<TracerProvider, Trace
 // TODO add configuration
 #[cfg(feature = "otel")]
 pub fn init_metrics(config: &OpentelemetryConfig) -> Result<SdkMeterProvider, MetricsError> {
-    let exporter = opentelemetry_stdout::MetricsExporterBuilder::default().build();
+    let exporter = opentelemetry_stdout::MetricExporterBuilder::default().build();
     let reader = PeriodicReader::builder(exporter, runtime::Tokio).build();
     let provider = SdkMeterProvider::builder()
         .with_reader(reader)
