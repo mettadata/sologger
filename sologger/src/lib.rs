@@ -1,4 +1,3 @@
-pub mod sologger_config;
 mod log_processor;
 #[cfg_attr(
     feature = "solana_client_subscriber",
@@ -6,3 +5,4 @@ mod log_processor;
 )]
 pub mod log_subscriber;
 pub mod logger_lib;
+pub mod sologger_config;

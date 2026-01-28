@@ -64,9 +64,7 @@ fn bench_to_json(c: &mut Criterion) {
         "signature".to_string(),
     );
 
-    c.bench_function("to_json", |b| {
-        b.iter(|| black_box(&log_context).to_json())
-    });
+    c.bench_function("to_json", |b| b.iter(|| black_box(&log_context).to_json()));
 }
 
 criterion_group!(

@@ -1,11 +1,9 @@
 use solana_rpc_client_api::response::{Response, RpcLogsResponse};
 
-
 use solana_transaction_status::{
-    ConfirmedBlock, EncodedConfirmedBlock,
-    EncodedConfirmedTransactionWithStatusMeta, EncodedTransaction,
-    EncodedTransactionWithStatusMeta, TransactionWithStatusMeta, UiConfirmedBlock,
-    VersionedConfirmedBlock, VersionedTransactionWithStatusMeta,
+    ConfirmedBlock, EncodedConfirmedBlock, EncodedConfirmedTransactionWithStatusMeta,
+    EncodedTransaction, EncodedTransactionWithStatusMeta, TransactionWithStatusMeta,
+    UiConfirmedBlock, VersionedConfirmedBlock, VersionedTransactionWithStatusMeta,
 };
 
 use sologger_log_context::programs_selector::ProgramsSelector;
@@ -269,16 +267,28 @@ mod tests {
 
     use solana_rpc_client::rpc_client::RpcClient;
     use solana_rpc_client_api::config::{CommitmentConfig, RpcBlockConfig, RpcTransactionConfig};
-    use solana_rpc_client_api::response::{Response, RpcLogsResponse, RpcResponseContext, UiTransactionError};
+    use solana_rpc_client_api::response::{
+        Response, RpcLogsResponse, RpcResponseContext, UiTransactionError,
+    };
     use solana_sdk::clock::UnixTimestamp;
     use solana_sdk::instruction::InstructionError;
     use solana_sdk::message::Message;
     use solana_sdk::signature::{Keypair, Signature, Signer};
     use solana_sdk::transaction::{Transaction, TransactionError, VersionedTransaction};
     use solana_transaction_status::option_serializer::OptionSerializer;
-    use solana_transaction_status::{ConfirmedBlock, EncodedConfirmedBlock, EncodedTransaction, EncodedTransactionWithStatusMeta, TransactionDetails, TransactionStatusMeta, UiConfirmedBlock, UiMessage, UiParsedMessage, UiRawMessage, UiTransaction, UiTransactionEncoding, UiTransactionStatusMeta, VersionedConfirmedBlock, VersionedTransactionWithStatusMeta};
+    use solana_transaction_status::{
+        ConfirmedBlock, EncodedConfirmedBlock, EncodedTransaction,
+        EncodedTransactionWithStatusMeta, TransactionDetails, TransactionStatusMeta,
+        UiConfirmedBlock, UiMessage, UiParsedMessage, UiRawMessage, UiTransaction,
+        UiTransactionEncoding, UiTransactionStatusMeta, VersionedConfirmedBlock,
+        VersionedTransactionWithStatusMeta,
+    };
 
-    use crate::log_context_transformer::{from_confirmed_block, from_encoded_confirmed_block, from_encoded_confirmed_transaction, from_encoded_transaction, from_rpc_logs_response, from_rpc_response, from_ui_confirmed_block, from_version_confirmed_block};
+    use crate::log_context_transformer::{
+        from_confirmed_block, from_encoded_confirmed_block, from_encoded_confirmed_transaction,
+        from_encoded_transaction, from_rpc_logs_response, from_rpc_response,
+        from_ui_confirmed_block, from_version_confirmed_block,
+    };
     use sologger_log_context::programs_selector::ProgramsSelector;
 
     #[test]
@@ -581,15 +591,11 @@ mod tests {
             version: None,
         };
 
-        let result = from_encoded_transaction(
-            &transaction,
-            123,
-            &ProgramsSelector::new_all_programs(),
-        )
-            .unwrap();
+        let result =
+            from_encoded_transaction(&transaction, 123, &ProgramsSelector::new_all_programs())
+                .unwrap();
 
         assert_eq!(result.len(), 0);
         // You might want to add more assertions here to check the error handling
     }
-    
 }

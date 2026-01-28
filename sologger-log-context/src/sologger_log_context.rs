@@ -44,7 +44,7 @@ pub struct LogContext {
     ///The signature of the transaction that invoked the program that produced the logs
     pub signature: String,
     pub consumed_cu: u64,
-    pub max_cu: u64
+    pub max_cu: u64,
 }
 
 impl LogContext {
@@ -435,10 +435,8 @@ impl LogContext {
                             match computer_numbers {
                                 None => {}
                                 Some((consumed_cu, max_cu)) => {
-                                    result[call_ids[call_ids.len() - 1]]
-                                        .max_cu = max_cu;
-                                    result[call_ids[call_ids.len() - 1]]
-                                        .consumed_cu = consumed_cu;
+                                    result[call_ids[call_ids.len() - 1]].max_cu = max_cu;
+                                    result[call_ids[call_ids.len() - 1]].consumed_cu = consumed_cu;
                                 }
                             }
                         }
@@ -901,8 +899,7 @@ mod tests {
                                          "Log truncated",
                                          "Program log: Instruction: Mint"].into_iter().map(|s| s.to_string()).collect();
 
-        let programs_selector =
-            ProgramsSelector::new_all_programs();
+        let programs_selector = ProgramsSelector::new_all_programs();
 
         let log_contexts = LogContext::parse_logs(
             &raw_logs,
@@ -1165,10 +1162,13 @@ mod tests {
             "Program 4rWe4F9bpyy98MTAePXKNBXmGd3XJfzGPYwXKtrTHWmc consumed 159581 of 499850 compute units",
             "Program 4rWe4F9bpyy98MTAePXKNBXmGd3XJfzGPYwXKtrTHWmc success"
         ].into_iter().map(|s| s.to_string()).collect();
-        
-        let programs_selector = ProgramsSelector::new(&["4rWe4F9bpyy98MTAePXKNBXmGd3XJfzGPYwXKtrTHWmc".to_string(), "8PTUyQsde4zDXUcAStXJFHkAUtcWnDJsPgGRZGp4PMCb".to_string()]);
+
+        let programs_selector = ProgramsSelector::new(&[
+            "4rWe4F9bpyy98MTAePXKNBXmGd3XJfzGPYwXKtrTHWmc".to_string(),
+            "8PTUyQsde4zDXUcAStXJFHkAUtcWnDJsPgGRZGp4PMCb".to_string(),
+        ]);
         let log_contexts = LogContext::parse_logs(&raw_logs, "".to_string(), &programs_selector,216778028, "KDhFgTogstghe9P1jVjVepnwfR9ZbcU8a6D21jXBh3PPyfkkd92MmevsWW7qb6QtfmfmWxAPYnL3xZR81xVCmeQ".to_string());
-        
+
         assert_eq!(log_contexts.len(), 2);
         assert_eq!(log_contexts[0].raw_logs.len(), 5);
         assert_eq!(log_contexts[0].data_logs[0], "oWrjgGd+/JKekEroa6JPkB0K2UIdT+zKkvpV785cVe4O1d6G7jztJ3Xn+TcIhLQvmcg+pEqtGTsojLCZDoewAWPHW+ZX5ivISu0LxJpgTDQ1zb/sX2P93/i+El/IMD4yW/HuO09pT3WsoYcb9r4iDmwY6rdZmzYEM2qK1Tje670ZtSxChoG0awAAxS68orEAAADFLryisQA=");
@@ -1229,7 +1229,6 @@ mod tests {
         let log_contexts = LogContext::parse_logs(&raw_logs, "".to_string(), &programs_selector,216778028, "KDhFgTogstghe9P1jVjVepnwfR9ZbcU8a6D21jXBh3PPyfkkd92MmevsWW7qb6QtfmfmWxAPYnL3xZR81xVCmeQ".to_string());
     }
 
-
     #[test]
     fn log_parser_empty_logs_test() {
         let logs: Vec<String> = vec![];
@@ -1267,9 +1266,18 @@ mod tests {
         );
 
         assert_eq!(log_contexts.len(), 3);
-        assert_eq!(log_contexts[0].program_id, "A111111111111111111111111111111111111111");
-        assert_eq!(log_contexts[1].program_id, "B222222222222222222222222222222222222222");
-        assert_eq!(log_contexts[2].program_id, "C333333333333333333333333333333333333333");
+        assert_eq!(
+            log_contexts[0].program_id,
+            "A111111111111111111111111111111111111111"
+        );
+        assert_eq!(
+            log_contexts[1].program_id,
+            "B222222222222222222222222222222222222222"
+        );
+        assert_eq!(
+            log_contexts[2].program_id,
+            "C333333333333333333333333333333333333333"
+        );
         assert_eq!(log_contexts[0].depth, 1);
         assert_eq!(log_contexts[1].depth, 2);
         assert_eq!(log_contexts[2].depth, 3);
@@ -1293,8 +1301,14 @@ mod tests {
         );
 
         assert_eq!(log_contexts.len(), 2);
-        assert_eq!(log_contexts[0].program_id, "A111111111111111111111111111111111111111");
-        assert_eq!(log_contexts[1].program_id, "B222222222222222222222222222222222222222");
+        assert_eq!(
+            log_contexts[0].program_id,
+            "A111111111111111111111111111111111111111"
+        );
+        assert_eq!(
+            log_contexts[1].program_id,
+            "B222222222222222222222222222222222222222"
+        );
     }
 
     #[test]
@@ -1315,7 +1329,10 @@ mod tests {
         );
 
         assert_eq!(log_contexts.len(), 1);
-        assert_eq!(log_contexts[0].program_id, "A111111111111111111111111111111111111111");
+        assert_eq!(
+            log_contexts[0].program_id,
+            "A111111111111111111111111111111111111111"
+        );
         assert_eq!(log_contexts[0].invoke_result, "SomeReturnValue");
     }
 
@@ -1337,9 +1354,14 @@ mod tests {
         );
 
         assert_eq!(log_contexts.len(), 1);
-        assert_eq!(log_contexts[0].program_id, "A111111111111111111111111111111111111111");
+        assert_eq!(
+            log_contexts[0].program_id,
+            "A111111111111111111111111111111111111111"
+        );
         assert_eq!(log_contexts[0].raw_logs.len(), 3);
-        assert!(log_contexts[0].raw_logs.contains(&"Program consumption: 50000".to_string()));
+        assert!(log_contexts[0]
+            .raw_logs
+            .contains(&"Program consumption: 50000".to_string()));
     }
 
     #[test]
@@ -1361,8 +1383,14 @@ mod tests {
         );
 
         assert_eq!(log_contexts.len(), 2);
-        assert_eq!(log_contexts[0].program_id, "A111111111111111111111111111111111111111");
-        assert_eq!(log_contexts[1].program_id, "B222222222222222222222222222222222222222");
+        assert_eq!(
+            log_contexts[0].program_id,
+            "A111111111111111111111111111111111111111"
+        );
+        assert_eq!(
+            log_contexts[1].program_id,
+            "B222222222222222222222222222222222222222"
+        );
         assert_eq!(log_contexts[0].instruction_index, 0);
         assert_eq!(log_contexts[1].instruction_index, 1);
     }
@@ -1371,7 +1399,8 @@ mod tests {
     fn log_parser_transaction_error_test() {
         let logs: Vec<String> = vec![
             "Program A111111111111111111111111111111111111111 invoke [1]".to_string(),
-            "Program A111111111111111111111111111111111111111 failed: custom program error: 0x1".to_string(),
+            "Program A111111111111111111111111111111111111111 failed: custom program error: 0x1"
+                .to_string(),
         ];
         let programs_selector = ProgramsSelector::new_all_programs();
 
@@ -1384,7 +1413,10 @@ mod tests {
         );
 
         assert_eq!(log_contexts.len(), 1);
-        assert_eq!(log_contexts[0].program_id, "A111111111111111111111111111111111111111");
+        assert_eq!(
+            log_contexts[0].program_id,
+            "A111111111111111111111111111111111111111"
+        );
         assert_eq!(log_contexts[0].transaction_error, "Transaction failed");
         assert_eq!(log_contexts[0].errors.len(), 1);
         assert_eq!(log_contexts[0].errors[0], "custom program error: 0x1");
@@ -1439,8 +1471,12 @@ mod tests {
 
     #[test]
     fn test_very_large_numbers() {
-        let log = "Program Test consumed 18446744073709551615 of 18446744073709551615 compute units";
-        assert_eq!(extract_compute_numbers(log), Some((18446744073709551615, 18446744073709551615)));
+        let log =
+            "Program Test consumed 18446744073709551615 of 18446744073709551615 compute units";
+        assert_eq!(
+            extract_compute_numbers(log),
+            Some((18446744073709551615, 18446744073709551615))
+        );
     }
 
     #[test]

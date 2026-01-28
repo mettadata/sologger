@@ -6,10 +6,10 @@ use std::path::Path;
 use anyhow::Result;
 use log::{trace, Log};
 
-use sologger_log_context::programs_selector::ProgramsSelector;
 use sologger::log_subscriber;
 use sologger::logger_lib::init_logger;
 use sologger::sologger_config::SologgerConfig;
+use sologger_log_context::programs_selector::ProgramsSelector;
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -34,7 +34,8 @@ fn load_config() -> Result<(SologgerConfig, ProgramsSelector)> {
     let sologger_config_path = if args.len() > 1 {
         args[1].clone()
     } else {
-        env::var("SOLOGGER_APP_CONFIG_LOC").unwrap_or("./config/local/sologger-config.json".to_string())
+        env::var("SOLOGGER_APP_CONFIG_LOC")
+            .unwrap_or("./config/local/sologger-config.json".to_string())
     };
 
     trace!("sologger_config_path: {}", sologger_config_path);
@@ -122,7 +123,7 @@ mod tests {
         let config = json!({
             "rpcUrl": "wss://api.mainnet-beta.solana.com"
         });
-        
+
         let programs_selector = create_programs_selector_from_config(&config);
         assert!(!programs_selector.select_all_programs);
         assert!(programs_selector.programs.is_empty());
@@ -139,12 +140,13 @@ mod tests {
                 ]
             }
         });
-        
+
         let programs_selector = create_programs_selector_from_config(&config);
         assert!(!programs_selector.select_all_programs);
         assert_eq!(programs_selector.programs.len(), 2);
         assert!(programs_selector.is_program_selected_string("11111111111111111111111111111112"));
-        assert!(programs_selector.is_program_selected_string("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"));
+        assert!(programs_selector
+            .is_program_selected_string("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"));
     }
 
     #[test]
@@ -155,7 +157,7 @@ mod tests {
                 "programs": ["*"]
             }
         });
-        
+
         let programs_selector = create_programs_selector_from_config(&config);
         assert!(programs_selector.select_all_programs);
         assert_eq!(programs_selector.programs.len(), 0);
@@ -169,7 +171,7 @@ mod tests {
                 "programs": []
             }
         });
-        
+
         let programs_selector = create_programs_selector_from_config(&config);
         assert!(!programs_selector.select_all_programs);
         assert!(programs_selector.programs.is_empty());
@@ -183,7 +185,7 @@ mod tests {
                 "programs": "not_an_array"
             }
         });
-        
+
         let programs_selector = create_programs_selector_from_config(&config);
         assert!(!programs_selector.select_all_programs);
         assert!(programs_selector.programs.is_empty());

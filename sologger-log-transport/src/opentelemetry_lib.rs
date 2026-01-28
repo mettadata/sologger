@@ -2,19 +2,19 @@ use std::fs;
 use std::str::FromStr;
 
 use anyhow::Result as AnyResult;
-use log::{Level, trace};
-use opentelemetry::{Key, KeyValue, metrics, trace::Tracer, global};
-use opentelemetry::metrics::{MeterProvider};
+use log::{trace, Level};
+use opentelemetry::metrics::MeterProvider;
 use opentelemetry::trace::TraceError;
+use opentelemetry::{global, metrics, trace::Tracer, Key, KeyValue};
 use opentelemetry_api::global::logger_provider;
 use opentelemetry_api::metrics::MetricsError;
 use opentelemetry_api::trace::FutureExt;
-use opentelemetry_otlp::{LogExporter, WithExportConfig};
 use opentelemetry_appender_log::OpenTelemetryLogBridge;
-use opentelemetry_sdk::{Resource, runtime, trace as sdktrace};
+use opentelemetry_otlp::{LogExporter, WithExportConfig};
 use opentelemetry_sdk::logs::{BatchConfig, LogError, LoggerProvider};
 use opentelemetry_sdk::metrics::{PeriodicReader, SdkMeterProvider};
 use opentelemetry_sdk::trace::{Config, TracerProvider};
+use opentelemetry_sdk::{runtime, trace as sdktrace, Resource};
 use opentelemetry_stdout::SpanExporter;
 use serde_json;
 
@@ -49,7 +49,7 @@ pub fn init_logs_opentelemetry(
     let logger = LoggerProvider::builder()
         .with_resource(Resource::new(log_config))
         .with_batch_exporter(exporter, runtime::Tokio)
-        .build();//.expect("Failed to initialize opentelemetry logging");
+        .build(); //.expect("Failed to initialize opentelemetry logging");
 
     // let logger = opentelemetry_otlp::new_pipeline()
     //     .logging().with_resource(Resource::new(log_config))
@@ -78,7 +78,7 @@ pub fn init_tracer(config: &OpentelemetryConfig) -> Result<TracerProvider, Trace
     let provider = TracerProvider::builder()
         .with_simple_exporter(SpanExporter::default())
         .build();
-    
+
     Ok(provider)
 }
 

@@ -1,8 +1,8 @@
-use std::str::FromStr;
 use semver::Version;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use sologger_log_context::programs_selector::ProgramsSelector;
 use sologger_log_context::sologger_log_context::LogContext;
+use std::str::FromStr;
 use thiserror::Error;
 
 /// Extracts log messages from a Response<RpcLogsResponse> and returns a vector of LogContexts
@@ -245,7 +245,6 @@ impl From<SanitizeMessageError> for TransactionError {
     }
 }
 
-
 #[derive(PartialEq, Debug, Error, Eq, Clone)]
 pub enum SanitizeMessageError {
     #[error("index out of bounds")]
@@ -307,7 +306,6 @@ pub enum AddressLoaderError {
     #[error("Address lookup contains an invalid index")]
     InvalidLookupIndex,
 }
-
 
 #[derive(PartialEq, Debug, Error, Eq, Clone)]
 pub enum SanitizeError {
@@ -626,11 +624,12 @@ pub struct Response<T> {
 
 // End of Solana copied code
 
-
 #[cfg(test)]
 mod tests {
+    use crate::log_context_transformer_wasm::{
+        from_rpc_logs_response, from_rpc_response, Response, RpcLogsResponse, RpcResponseContext,
+    };
     use sologger_log_context::programs_selector::ProgramsSelector;
-    use crate::log_context_transformer_wasm::{from_rpc_logs_response, from_rpc_response, Response, RpcLogsResponse, RpcResponseContext};
 
     #[test]
     pub fn test_parse_rpc_logs_response() {
@@ -639,14 +638,14 @@ mod tests {
             err: None,
             logs: vec!["Program 11111111111111111111111111111111 invoke [1]".to_string(), "Program 11111111111111111111111111111111 success".to_string()],
         };
-    
+
         let logs_contexts = from_rpc_logs_response(
             &rpc_logs_response,
             323432,
             &ProgramsSelector::new_all_programs(),
         )
         .unwrap();
-    
+
         assert_eq!(logs_contexts.len(), 1);
     }
 
@@ -657,7 +656,7 @@ mod tests {
             err: None,
             logs: vec!["Program 11111111111111111111111111111111 invoke [1]".to_string(), "Program 11111111111111111111111111111111 success".to_string()],
         };
-    
+
         let response = Response {
             context: RpcResponseContext {
                 slot: 12324,
@@ -665,11 +664,10 @@ mod tests {
             },
             value: rpc_logs_response,
         };
-    
+
         let logs_contexts =
             from_rpc_response(&response, &ProgramsSelector::new_all_programs()).unwrap();
-    
+
         assert_eq!(logs_contexts.len(), 1);
     }
-    
 }

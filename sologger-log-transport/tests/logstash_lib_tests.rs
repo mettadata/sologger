@@ -1,5 +1,5 @@
-use sologger_log_transport::logstash_lib::init_logstash_logger;
 use crate::a::foo;
+use sologger_log_transport::logstash_lib::init_logstash_logger;
 
 #[test]
 pub fn test_load_config() {

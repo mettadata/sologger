@@ -1,6 +1,6 @@
-use std::path::Path;
 #[cfg(feature = "enable_otel")]
 use sologger_log_transport::opentelemetry_lib::get_otel_config;
+use std::path::Path;
 
 use crate::sologger_config::SologgerConfig;
 

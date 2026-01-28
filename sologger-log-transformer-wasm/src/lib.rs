@@ -20,9 +20,9 @@
 //!         "Program failed to complete: Invoked an instruction with data that is too large (12178014311288245306 > 10240)",
 //!         "Program AbcdefGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL failed: Program failed to complete"
 //!     ];
-//! 
+//!
 //!     const transformer = new WasmLogContextTransformer(["9RX7oz3WN5VRTqekBBHBvEJFVMNRnrCmVy7S6B6S5oU7", "AbcdefGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"]);
-//! 
+//!
 //!     // Example usage of from_rpc_logs_response
 //!     const rpcLogsResponse = {
 //!         signature: "test_signature",
@@ -30,14 +30,14 @@
 //!         logs: logs
 //!     };
 //!     const slot = 123456789;
-//! 
+//!
 //!     try {
 //!         const result = transformer.from_rpc_logs_response(rpcLogsResponse, BigInt(slot));
 //!         console.log(JSON.parse(JSON.stringify(result)));
 //!     } catch (error) {
 //!         console.error("Error:", error);
 //!     }
-//! 
+//!
 //!     // Example usage of from_rpc_response
 //!     const rpcResponse = {
 //!         context: {
@@ -46,7 +46,7 @@
 //!         },
 //!         value: rpcLogsResponse
 //!     };
-//! 
+//!
 //!     try {
 //!         const result = transformer.from_rpc_response(rpcResponse);
 //!         console.log(JSON.parse(JSON.stringify(result)));
@@ -59,9 +59,11 @@
 
 pub mod log_context_transformer_wasm;
 
-use wasm_bindgen::prelude::*;
+use crate::log_context_transformer_wasm::{
+    from_rpc_logs_response, from_rpc_response, Response, RpcLogsResponse,
+};
 use sologger_log_context::programs_selector::ProgramsSelector;
-use crate::log_context_transformer_wasm::{from_rpc_logs_response, from_rpc_response, Response, RpcLogsResponse};
+use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
 pub struct WasmLogContextTransformer {
@@ -87,7 +89,11 @@ impl WasmLogContextTransformer {
     }
 
     #[wasm_bindgen]
-    pub fn from_rpc_logs_response(&self, rpc_logs_response: JsValue, slot: u64) -> Result<JsValue, JsValue> {
+    pub fn from_rpc_logs_response(
+        &self,
+        rpc_logs_response: JsValue,
+        slot: u64,
+    ) -> Result<JsValue, JsValue> {
         let rpc_logs_response: RpcLogsResponse = serde_wasm_bindgen::from_value(rpc_logs_response)?;
         let result = from_rpc_logs_response(&rpc_logs_response, slot, &self.program_selector)
             .map_err(|e| JsValue::from_str(&e.to_string()))?;
@@ -98,21 +104,19 @@ impl WasmLogContextTransformer {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use wasm_bindgen_test::*;
     use serde_json::json;
-    
+    use wasm_bindgen_test::*;
+
     #[wasm_bindgen_test]
     async fn test_error_handling() {
         let transformer = WasmLogContextTransformer::new(vec!["*".to_string()]);
         let invalid_response = json!({
             "invalid": "data"
         });
-    
-        let result = transformer.from_rpc_response(
-            serde_wasm_bindgen::to_value(&invalid_response).unwrap()
-        );
-    
+
+        let result =
+            transformer.from_rpc_response(serde_wasm_bindgen::to_value(&invalid_response).unwrap());
+
         assert!(result.is_err());
     }
 }
-
