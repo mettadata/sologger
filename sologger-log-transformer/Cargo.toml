@@ -18,7 +18,7 @@ doctest = false
 anyhow = "1.0"
 solana-rpc-client = "3.1"
 solana-rpc-client-api = "3.1"
-solana-transaction-status = "3.1"
+solana-transaction-status = { version = "3.1", features = ["agave-unstable-api"] }
 solana-sdk = "3.0"
 sologger_log_context = { path = "../sologger-log-context" }
 
