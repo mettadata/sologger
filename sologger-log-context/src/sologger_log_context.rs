@@ -365,7 +365,7 @@ impl LogContext {
                             let last_program = call_stack.pop();
                             let last_call_index = call_ids.pop();
                             if last_call_index.is_none() {
-                                warn!("callIds malformed");
+                                trace!("callIds malformed");
                             }
                             if last_program
                                 .is_some_and(|x| x != success_result_program_id.unwrap().as_str())
